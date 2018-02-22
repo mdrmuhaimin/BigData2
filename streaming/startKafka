@@ -1,0 +1,6 @@
+sudo  /opt/Kafka/kafka_2.11-1.0.0/bin/kafka-server-start.sh /opt/Kafka/kafka_2.11-1.0.0/config/server.properties
+
+# Follow these instructions
+# https://devops.profitbricks.com/tutorials/install-and-configure-apache-kafka-on-ubuntu-1604-1/
+# But with this wget command :
+# wget http://www.trieuvan.com/apache/kafka/1.0.0/kafka_2.11-1.0.0.tgz
