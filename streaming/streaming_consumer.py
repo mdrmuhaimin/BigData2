@@ -2,6 +2,8 @@ from pyspark import SparkConf, SparkContext
 import sys
 import operator
 import json
+import pandas as pd
+import numpy as np
 import math
 from kafka import KafkaConsumer
 from pyspark.sql import SparkSession, types
@@ -14,41 +16,41 @@ from pyspark.sql.types import (
 # spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0 streaming_consumer.py  2>/dev/null
 
 colummns = ['Time', 'r.ankle Acceleration X (m/s^2)',
-       'r.ankle Acceleration Y (m/s^2)', 'r.ankle Acceleration Z (m/s^2)',
-       'r.ankle Angular Velocity X (rad/s)',
-       'r.ankle Angular Velocity Y (rad/s)',
-       'r.ankle Angular Velocity Z (rad/s)', 'r.ankle Magnetic Field X (uT)',
-       'r.ankle Magnetic Field Y (uT)', 'r.ankle Magnetic Field Z (uT)',
-       'l.ankle Acceleration X (m/s^2)', 'l.ankle Acceleration Y (m/s^2)',
-       'l.ankle Acceleration Z (m/s^2)', 'l.ankle Angular Velocity X (rad/s)',
-       'l.ankle Angular Velocity Y (rad/s)',
-       'l.ankle Angular Velocity Z (rad/s)', 'l.ankle Magnetic Field X (uT)',
-       'l.ankle Magnetic Field Y (uT)', 'l.ankle Magnetic Field Z (uT)',
-       'r.thigh Acceleration X (m/s^2)', 'r.thigh Acceleration Y (m/s^2)',
-       'r.thigh Acceleration Z (m/s^2)', 'r.thigh Angular Velocity X (rad/s)',
-       'r.thigh Angular Velocity Y (rad/s)',
-       'r.thigh Angular Velocity Z (rad/s)', 'r.thigh Magnetic Field X (uT)',
-       'r.thigh Magnetic Field Y (uT)', 'r.thigh Magnetic Field Z (uT)',
-       'l.thigh Acceleration X (m/s^2)', 'l.thigh Acceleration Y (m/s^2)',
-       'l.thigh Acceleration Z (m/s^2)', 'l.thigh Angular Velocity X (rad/s)',
-       'l.thigh Angular Velocity Y (rad/s)',
-       'l.thigh Angular Velocity Z (rad/s)', 'l.thigh Magnetic Field X (uT)',
-       'l.thigh Magnetic Field Y (uT)', 'l.thigh Magnetic Field Z (uT)',
-       'head Acceleration X (m/s^2)', 'head Acceleration Y (m/s^2)',
-       'head Acceleration Z (m/s^2)', 'head Angular Velocity X (rad/s)',
-       'head Angular Velocity Y (rad/s)', 'head Angular Velocity Z (rad/s)',
-       'head Magnetic Field X (uT)', 'head Magnetic Field Y (uT)',
-       'head Magnetic Field Z (uT)', 'sternum Acceleration X (m/s^2)',
-       'sternum Acceleration Y (m/s^2)', 'sternum Acceleration Z (m/s^2)',
-       'sternum Angular Velocity X (rad/s)',
-       'sternum Angular Velocity Y (rad/s)',
-       'sternum Angular Velocity Z (rad/s)', 'sternum Magnetic Field X (uT)',
-       'sternum Magnetic Field Y (uT)', 'sternum Magnetic Field Z (uT)',
-       'waist Acceleration X (m/s^2)', 'waist Acceleration Y (m/s^2)',
-       'waist Acceleration Z (m/s^2)', 'waist Angular Velocity X (rad/s)',
-       'waist Angular Velocity Y (rad/s)', 'waist Angular Velocity Z (rad/s)',
-       'waist Magnetic Field X (uT)', 'waist Magnetic Field Y (uT)',
-       'waist Magnetic Field Z (uT)', 'FileName', 'Subject', 'Trial Type']
+	'r.ankle Acceleration Y (m/s^2)', 'r.ankle Acceleration Z (m/s^2)',
+	'r.ankle Angular Velocity X (rad/s)',
+	'r.ankle Angular Velocity Y (rad/s)',
+	'r.ankle Angular Velocity Z (rad/s)', 'r.ankle Magnetic Field X (uT)',
+	'r.ankle Magnetic Field Y (uT)', 'r.ankle Magnetic Field Z (uT)',
+	'l.ankle Acceleration X (m/s^2)', 'l.ankle Acceleration Y (m/s^2)',
+	'l.ankle Acceleration Z (m/s^2)', 'l.ankle Angular Velocity X (rad/s)',
+	'l.ankle Angular Velocity Y (rad/s)',
+	'l.ankle Angular Velocity Z (rad/s)', 'l.ankle Magnetic Field X (uT)',
+	'l.ankle Magnetic Field Y (uT)', 'l.ankle Magnetic Field Z (uT)',
+	'r.thigh Acceleration X (m/s^2)', 'r.thigh Acceleration Y (m/s^2)',
+	'r.thigh Acceleration Z (m/s^2)', 'r.thigh Angular Velocity X (rad/s)',
+	'r.thigh Angular Velocity Y (rad/s)',
+	'r.thigh Angular Velocity Z (rad/s)', 'r.thigh Magnetic Field X (uT)',
+	'r.thigh Magnetic Field Y (uT)', 'r.thigh Magnetic Field Z (uT)',
+	'l.thigh Acceleration X (m/s^2)', 'l.thigh Acceleration Y (m/s^2)',
+	'l.thigh Acceleration Z (m/s^2)', 'l.thigh Angular Velocity X (rad/s)',
+	'l.thigh Angular Velocity Y (rad/s)',
+	'l.thigh Angular Velocity Z (rad/s)', 'l.thigh Magnetic Field X (uT)',
+	'l.thigh Magnetic Field Y (uT)', 'l.thigh Magnetic Field Z (uT)',
+	'head Acceleration X (m/s^2)', 'head Acceleration Y (m/s^2)',
+	'head Acceleration Z (m/s^2)', 'head Angular Velocity X (rad/s)',
+	'head Angular Velocity Y (rad/s)', 'head Angular Velocity Z (rad/s)',
+	'head Magnetic Field X (uT)', 'head Magnetic Field Y (uT)',
+	'head Magnetic Field Z (uT)', 'sternum Acceleration X (m/s^2)',
+	'sternum Acceleration Y (m/s^2)', 'sternum Acceleration Z (m/s^2)',
+	'sternum Angular Velocity X (rad/s)',
+	'sternum Angular Velocity Y (rad/s)',
+	'sternum Angular Velocity Z (rad/s)', 'sternum Magnetic Field X (uT)',
+	'sternum Magnetic Field Y (uT)', 'sternum Magnetic Field Z (uT)',
+	'waist Acceleration X (m/s^2)', 'waist Acceleration Y (m/s^2)',
+	'waist Acceleration Z (m/s^2)', 'waist Angular Velocity X (rad/s)',
+	'waist Angular Velocity Y (rad/s)', 'waist Angular Velocity Z (rad/s)',
+	'waist Magnetic Field X (uT)', 'waist Magnetic Field Y (uT)',
+	'waist Magnetic Field Z (uT)', 'FileName', 'Subject', 'Trial Type']
 
 # Have a hard-coded subject for now
 topic = "trials-6"
@@ -80,14 +82,39 @@ def main() :
 	lines = lines.drop("value")
 	lines.createOrReplaceTempView('lines')
 
-	# Get the query to print it out on console
-	query = lines \
+	pdLines = pd.DataFrame.from_records(lines.collect(), columns=lines.columns)
+	query = pdLines \
 	.writeStream \
 	.format("console") \
 	.start()
+
+	# Get the query to print it out on console
+	# query = lines \
+	# .writeStream \
+	# .format("console") \
+	# .start()
+
+	# query = lines \
+	# .writeStream \
+	# .start()
+
+	# query = lines \
+	# .writeStream \
+	# .format("kafka") \
+ #    	.option("kafka.bootstrap.servers", "host1:port1,host2:port2") \
+	# .start()
+
 
 	query.awaitTermination(600)
 
 
 if __name__ == "__main__":
 	main()
+
+# 130479533051562 781 ms
+# 130479533052343 782 ms
+# 130479533053125 781 ms
+# 130479533053906
+# 0.000781 seconds
+
+# 1305315791132810.0

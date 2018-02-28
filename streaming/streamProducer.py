@@ -1,25 +1,22 @@
-from kafka import KafkaProducer
-from random import randint
-import datetime, time, random, threading
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import glob, os
 import pickle
+from streamz import Stream
+from streamz.dataframe import Random
+from kafka import *
+from random import randint
+import datetime, time, random, threading
 import sys
 from xlrd import open_workbook
 
-
-subjects = [10] # messages per second
-
-files_path = sys.argv[1]    # Pass the IMU Dataset directory path
-files = glob.glob(files_path)
+files_path = '/home/jemd/Documents/SFU/Spring2018/BigData/finalProject/IMUDataset'    # Pass the IMU Dataset directory path
 folders = ['ADLs', 'Falls', 'Near_Falls']
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'],api_version=(0,10))
-def send_at(subject):
+def producer(subject) :
     rand = random.Random()
-    # producer = KafkaProducer(bootstrap_servers=['localhost:9092'],api_version=(0,10))
-    topic = 'trials-' + str(subject)                        # Name the topic "trials-(numSubject)"
-    interval = 5                                     # Messages every 5 secs
-
+    interval = 0.0008                                    # Messages every 5 secs
     while True :
         folder = folders[randint(0,2)]                      # Pick a random folder
         path = files_path+'/sub'+str(subject)+'/'+str(folder)+'/*.xlsx'
@@ -42,16 +39,11 @@ def send_at(subject):
                     msg += str(v) + ","
                 msg += f + ","                              # Add filename
                 msg += str(subject) + ","                   # Add subject
-                msg += folder                               # Add trial type
-                producer.send(topic,msg.encode('ascii'))    # Send the message
-
+                msg += folder    							# Add trial type
+                outf = open('./streamdata.csv','a+')                          
+                outf.write(msg+'\n')
+                outf.close()
                 time.sleep(interval)
-        
-if __name__ == "__main__":
-    for sub in subjects:
-        server_thread = threading.Thread(target=send_at, args=(sub,))
-        server_thread.setDaemon(True)
-        server_thread.start()
+        return # DELETE THIS IF YOU WANT MORE TRIALS. FOR NOW, IT STOPS AFTER 1 TRIAL IS COMPLETE
 
-    while 1:
-        time.sleep(1)
+producer(10)
