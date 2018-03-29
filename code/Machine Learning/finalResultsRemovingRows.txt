@@ -1,0 +1,125 @@
+2. RESULTANT PEAK WINDOW METHOD RESULTS
+
+Preprocessing :
+- DON'T drop resultant column this time
+- Group data in 0.5 second windows by 'subject','trial_type','trial_subtype','trial_num','trial_num_original'
+and calculate variance and mean of each column (all metrics,body parts and axis) (including resultants)
+- Pick a body part (most likely waist) to find the peak around.
+- Find the highest resultant_acceleration_mean for the body part picked (this is the peak). In fall
+trials, consider the peak and 2 seconds before and after it as 'fall' and the rest as not falls
+- In non-fall trials all observations are non-falls
+
+2.2. Only waist and acceleration
+Confusion matrix : 
+TN : 1432 FP : 109
+FN : 363 TP : 477
+
+Accuracy : 0.801763964721
+Recall : 0.567857142857
+Precision : 0.813993174061
+F-measure :0.669004207574
+Sensitivity : 56.7857142857
+Specificity : 92.9266709929
+
+2.3. waist, sternum and head accelerations : 
+Confusion matrix : 
+TN : 1307 FP : 234
+FN : 325 TP : 515
+
+Accuracy : 0.765224695506
+Recall : 0.613095238095
+Precision : 0.687583444593
+F-measure :0.648206419132
+Sensitivity : 61.3095238095
+Specificity : 84.815055159
+
+2.4. Waist and thighs accelerations : 
+Confusion matrix : 
+TN : 1518 FP : 23
+FN : 672 TP : 168
+
+Accuracy : 0.708105837883
+Recall : 0.2
+Precision : 0.879581151832
+F-measure :0.325897187197
+Sensitivity : 20.0
+Specificity : 98.5074626866
+
+2.5. Waist acceleration,velocity and magnetic field :
+Confusion matrix : 
+TN : 1488 FP : 53
+FN : 723 TP : 117
+
+Accuracy : 0.67408651827
+Recall : 0.139285714286
+Precision : 0.688235294118
+F-measure :0.231683168317
+Sensitivity : 13.9285714286
+Specificity : 96.5606748864
+
+2.7. Sternum and head accelerations (peak around sternum resultant acceleration) :
+Confusion matrix : 
+TN : 1371 FP : 169
+FN : 364 TP : 476
+
+Accuracy : 0.776050420168
+Recall : 0.566666666667
+Precision : 0.737984496124
+F-measure :0.641077441077
+Sensitivity : 56.6666666667
+Specificity : 89.025974026
+
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+
+3. RESULTANT DIFFERENCE WINDOW METHOD RESULTS : 
+
+Preprocessing : 
+- DON'T drop resultant column this time
+- Group data in 1.0 second windows by 'subject','trial_type','trial_subtype','trial_num','trial_num_original'
+and calculate variance and mean of each column (all metrics,body parts and axis) (including resultants)
+This method uses 1.0 second windows due to the calculation of the difference between resultant causing the
+kernels to freeze and restart. 1.0 second windows initially reduces the amount of differences to calculate
+- Pick a metric and body part to create the window around (usually waist acceleration )
+- Calculate the differences between every 2 observations of the waist acceleration mean column
+Basically we want to find the point where the acceleration mean changes the most and create a window
+around this peak
+- Find the peak difference and a window of 2 secs before and after it as "falls" rest as "nonfalls"
+
+(All these tests use the resultant and resultantdiff columns)
+3.1. Waist accelerations only : 
+Confusion matrix : 
+TN : 713 FP : 54
+FN : 194 TP : 226
+
+Accuracy : 0.791069924179
+Recall : 0.538095238095
+Precision : 0.807142857143
+F-measure :0.645714285714
+Sensitivity : 53.8095238095
+Specificity : 92.9595827901
+
+3.2. Sternum accelerations only : 
+Confusion matrix : 
+TN : 737 FP : 37
+FN : 200 TP : 220
+
+Accuracy : 0.801507537688
+Recall : 0.52380952381
+Precision : 0.856031128405
+F-measure :0.649926144756
+Sensitivity : 52.380952381
+Specificity : 95.2196382429
+
+3.3. Head accelerations only : 
+Confusion matrix : 
+TN : 709 FP : 59
+FN : 210 TP : 209
+
+Accuracy : 0.773378264532
+Recall : 0.498806682578
+Precision : 0.779850746269
+F-measure :0.608442503639
+Sensitivity : 49.8806682578
+Specificity : 92.3177083333
