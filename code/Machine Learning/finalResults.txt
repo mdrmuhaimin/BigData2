@@ -318,7 +318,9 @@ In this case the windowing process doesn't use the means or variances. It uses t
 the resultant of each row, finds the peak resultant and considers a "fall" everything within 250 rows (above and
 below the peak) as a fall. (250 * 0.00782 ~ 2 seconds above and below the peak)
 
-All these are using these columns : 
+THESE RESULTS ONLY USE FALL TRIALS : 
+
+All these are using these columns : (just to find the best set of results) :
 'waist Acceleration Y (m/s^2)'
 'waist Acceleration Z (m/s^2)' 
 'waist Acceleration X (m/s^2)'
@@ -328,32 +330,216 @@ All these are using these columns :
 The only extra preprocessing steps done before training and predicting are changing
 the dimensions of the data :
 
-4.1. CNN using input shape (1,4) (the vectors by themselves), kernel size 1, 8 filters and maxpooling 1. 
-(Basically the maxpooling and flatten layers don't do anything here). Results for 20 epochs : 
+4.1. 
+conv = Sequential()
+conv.add(Conv1D(filters=40, kernel_size=2, input_shape = (4,1), activation = 'relu'))
+conv.add(MaxPooling1D(2))
+conv.add(Flatten())
+conv.add(Dense(1, activation = 'sigmoid'))
+sgd = SGD(lr = 0.01, momentum = 0.9, decay = 0, nesterov = False)
+conv.compile(loss = 'binary_crossentropy', optimizer = sgd, metrics = ['accuracy'])
+conv.fit(X_train_final, y_train, batch_size = 500, epochs = 50, verbose = 0)
+
+(this is how the input looks  : )
+[[ 9.7707056]
+ [ 2.456483 ]
+ [-9.424129 ]
+ [-0.786239 ]]
+
+Model info : 
+Input shape:  (201699, 4, 1)
+Conv1D Layer : 
+Input : Tensor("conv1d_2_input:0", shape=(?, 4, 1), dtype=float32)
+Output : Tensor("conv1d_2/Relu:0", shape=(?, 3, 40), dtype=float32)
+MaxPooling1D Layer : 
+Output : Tensor("max_pooling1d_2/Squeeze:0", shape=(?, 1, 40), dtype=float32)
+Flatten Layer : 
+Output : Tensor("flatten_4/Reshape:0", shape=(?, ?), dtype=float32)
+Dense Output Layer :
+Output : Tensor("dense_4/Sigmoid:0", shape=(?, 1), dtype=float32)
 
 Confusion matrix : 
-TN : 539650 FP : 2865
-FN : 47812 TP : 4540
+TN : 138024 FP : 11327
+FN : 29827 TP : 22525
 
-Accuracy : 0.9148095288526679
-Sensitivity : 8.672066014669927
-Specificity : 99.47190400265431
-Precision : 0.613099257258609
-Recall : 0.08672066014669927
+Accuracy : 0.7959673381159428
+Sensitivity : 43.026054400978
+Specificity : 92.41585258886784
+Precision : 0.6653964315254638
+Recall : 0.43026054400978
 
-Results for 200 Epochs : (slightly better)
+4.2. Same thing with 3000 epochs : 
 Confusion matrix : 
-TN : 540599 FP : 1916
-FN : 46830 TP : 5522
+TN : 133225 FP : 16126
+FN : 25104 TP : 27248
 
-Accuracy : 0.9180556326035904
-Sensitivity : 10.547830073349633
-Specificity : 99.64683004156566
-Precision : 0.7424038720086045
-Recall : 0.10547830073349633
+Accuracy : 0.7955905464965816
+Sensitivity : 52.04767726161369
+Specificity : 89.20261665472611
+Precision : 0.6282104486558768
+Recall : 0.5204767726161369
 
-4.2. CNN using input of "images" of size 250x4 always causes the CNN to produce output 0 and
-give around 90% accuracy.
+4.3. Same thing with 90 filters : 
+Confusion matrix : 
+TN : 113502 FP : 35849
+FN : 26531 TP : 25821
 
-4.3. So far every other case has done the same where it keeps guessing everything is a 0 and ends
-with around 90% accuracy due to the fact that there aren't many cases of 1s.
+Accuracy : 0.6907334050559486
+Sensitivity : 49.321897921760396
+Specificity : 75.99681287704803
+Precision : 0.4186962866872061
+Recall : 0.49321897921760394
+
+4.3. Same thing with kernel size 4 and Maxpooling of 1 (basically no maxpooling)
+Confusion matrix : 
+TN : 128396 FP : 20955
+FN : 23976 TP : 28376
+
+Accuracy : 0.7772417861905871
+Sensitivity : 54.20232273838631
+Specificity : 85.96929381122322
+Precision : 0.5752163953700513
+Recall : 0.5420232273838631
+
+4.4. 50 filters, filter size 3, maxpooling=2, 3000epochs
+Confusion matrix : 
+TN : 124795 FP : 24556
+FN : 21478 TP : 30874
+
+Accuracy : 0.7717733499253854
+Sensitivity : 58.97386919315404
+Specificity : 83.55819512423753
+Precision : 0.556990799206206
+Recall : 0.5897386919315404
+
+4.5. 50 filters, filter size 3, maxpooling=2 (gets the best element from the filter), 500 epochs : 
+Confusion matrix : 
+TN : 129117 FP : 20234
+FN : 22696 TP : 29656
+
+Accuracy : 0.7871623129056088
+Sensitivity : 56.64731051344744
+Specificity : 86.45204919953666
+Precision : 0.5944277410302666
+Recall : 0.5664731051344744
+
+
+RESULTS WITH ALL TRIALS : 
+
+4.6. 50 filters, filter size 3, maxpooling=2 (gets the best element from the filter), 100 epochs : 
+Confusion matrix : 
+TN : 537357 FP : 5158
+FN : 44582 TP : 7770
+
+Accuracy : 0.9163846708592005
+Sensitivity : 14.841839853300733
+Specificity : 99.04924287807711
+Precision : 0.6010210396039604
+Recall : 0.14841839853300734
+
+4.6. 50 filters, filter size 3, maxpooling=2 (gets the best element from the filter), 500 epochs : 
+
+Confusion matrix : 
+TN : 528683 FP : 13832
+FN : 38292 TP : 14060
+
+Accuracy : 0.9123770523495168
+Sensitivity : 26.85666259168704
+Specificity : 97.45039307668912
+Precision : 0.5040871934604905
+Recall : 0.2685666259168704
+
+4.7. Same thing with 10000 epochs : 
+Confusion matrix : 
+TN : 538105 FP : 4410
+FN : 42600 TP : 9752
+
+Accuracy : 0.9209739319881587
+Sensitivity : 18.62775061124694
+Specificity : 99.18711925015899
+Precision : 0.6886033046179918
+Recall : 0.18627750611246943
+
+
+
+
+
+
+
+
+
+JUST FALLS : 
+
+We'll use the above as our set up for the rest of the tests 
+50 filters, filter size 3, maxpooling=2 (gets the best element from the filter), 500 epochs : 
+
+4.1. Just waist acceleration
+Confusion matrix : 
+TN : 129117 FP : 20234
+FN : 22696 TP : 29656
+
+Accuracy : 0.7871623129056088
+Sensitivity : 56.64731051344744
+Specificity : 86.45204919953666
+Precision : 0.5944277410302666
+Recall : 0.5664731051344744
+
+4.2. Waist, head, sternum accelerations :
+Confusion matrix : 
+TN : 105011 FP : 44340
+FN : 13755 TP : 38597
+
+Accuracy : 0.7119775114896655
+Sensitivity : 73.72593215158925
+Specificity : 70.31154796419173
+Precision : 0.46537733460337366
+Recall : 0.7372593215158925
+
+4.3. Waist acc,vel,mag : 
+Confusion matrix : 
+TN : 132868 FP : 16483
+FN : 23657 TP : 28695
+
+Accuracy : 0.8009945315637348
+Sensitivity : 54.811659535452314
+Specificity : 88.9635824333282
+Precision : 0.6351542786311922
+Recall : 0.5481165953545232
+
+4.4. Waist, thighs, acc : 
+Confusion matrix : 
+TN : 126149 FP : 23202
+FN : 16805 TP : 35547
+
+Accuracy : 0.8016539168976168
+Sensitivity : 67.8999847188264
+Specificity : 84.46478430007164
+Precision : 0.605065618138181
+Recall : 0.678999847188264
+
+4.5. All body parts acc :
+Confusion matrix : 
+TN : 120845 FP : 28506
+FN : 14375 TP : 37977
+
+Accuracy : 0.7874052443444074
+Sensitivity : 72.541641198044
+Specificity : 80.91341872501691
+Precision : 0.5712287351653806
+Recall : 0.72541641198044
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
