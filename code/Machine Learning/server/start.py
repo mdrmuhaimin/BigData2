@@ -20,6 +20,8 @@ bucket_name = 'storage-733'
 key = 'svm_model.pickle'
 env_local = bool(int(os.environ.get('ENV_LOCAL', True)))
 
+print('Use local model = ', env_local)
+
 def download_model():
     try:
         s3.meta.client.head_bucket(Bucket=bucket_name)
@@ -40,8 +42,8 @@ def download_model():
         raise
     return f
 
-if env_local:
-    pickle_file = 'svm_model.pickle'
+if env_local is True:
+    pickle_file = open('svm_model.pickle', 'rb')
 else:    
     pickle_file = download_model()
 
