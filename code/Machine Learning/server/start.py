@@ -56,6 +56,7 @@ def hello_world():
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
+    print(data)
     # print(json.dumps(data["features"]))
     y_predict = loaded_model.predict(data["features"])
     print(y_predict, type(y_predict))
