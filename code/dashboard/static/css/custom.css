@@ -1,0 +1,31 @@
+.navbar-brand {
+	font-size: 24px;
+}
+
+.dc-select-menu {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+    font-size: 20px;
+    border-width: 8px;
+    width: 300px;
+}
+
+.h4, h4 {
+    margin-left: 1rem;
+}
+
+div.column {
+	display: block;
+	float: left;
+}
+
+#bubble-chart {
+	background-image: url(body.png);
+	background-position: 49% 400%;
+    display: block;
+    float: center;
+}
+
+#bubble-chart svg g g.axis.x { display: none; }
+#bubble-chart svg g g.axis.y { display: none; }
