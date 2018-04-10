@@ -1,0 +1,8 @@
+sensor,x,y,size
+head,1,15.5,5
+l.ankle,1.2,1.5,5
+r.ankle,0.8,1.5,5
+l.thigh,1.2,5.7,5
+r.thigh,0.8,5.7,5
+sternum,1,12,5
+waist,1,8,5
