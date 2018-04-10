@@ -12,4 +12,6 @@ Muhammad R Myhaimin (https://github.com/mdrmuhaimin)
 
 Sensor data used in this project: https://researchdata.sfu.ca/islandora/object/islandora%3A9085/datastream/OBJ/download
 
+After downloading the file 'IMU Dataset.zip', please unzip it in the folder /data/IMU Dataset/
+
 Please run the jupyter notebook at /code/Summary.ipynb to check the code
