@@ -50,17 +50,12 @@ else:
 loaded_model = pickle.load( pickle_file )
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def status():
+    return 'Active'
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    print(data)
-    # print(json.dumps(data["features"]))
     y_predict = loaded_model.predict(data["features"])
-    print(y_predict, type(y_predict))
-    #tn, fp, fn, tp = confusion_matrix(y_test_binary, y_predict).ravel()
-    #specificity = tn / (tn+fp)
-    #sensivity =  tp / (tp+fn)
+    print(y_predict)
     return jsonify(dict(prediction=y_predict.tolist()))
