@@ -1,8 +1,6 @@
 # Fall Detection using wearable sensor data
 
-Repository for the final project
-
-CMPT 733 - Programming for Big Data 2
+Repository for the final project at CMPT 733 - Programming for Big Data 2
 
 Professional Master's Program in Big Data
 
@@ -18,7 +16,7 @@ Muhammad R Myhaimin (https://github.com/mdrmuhaimin)
 
 ### Project data:
 
-Sensor data used in this project: https://researchdata.sfu.ca/islandora/object/islandora%3A9085/datastream/OBJ/download
+IMU data used in this project: https://researchdata.sfu.ca/islandora/object/islandora%3A9085/datastream/
 
 After downloading the file 'IMU Dataset.zip', please unzip it in the folder /data/IMU Dataset/
 
